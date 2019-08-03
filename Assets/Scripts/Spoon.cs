@@ -4,14 +4,21 @@ using UnityEngine;
 
 public class Spoon : MonoBehaviour
 {
+	public GameObject ball;
 	public LayerMask hitLayers;
-
 	public float hoverHeight = 1.8f;
+	public float growthRate = 1.1f;
 
-	bool isScooping = false;
+	private bool isScooping = false;
+	private Vector3 lastPosition;
 
-    // Start is called before the first frame update
-    void Start()
+	[SerializeField]
+	private float turnSpeed = 1.5f;
+	[SerializeField]
+	private float rotationMargin = 1f;
+
+	// Start is called before the first frame update
+	void Start()
     {
 
     }
@@ -21,10 +28,15 @@ public class Spoon : MonoBehaviour
     {
 		if ( Input.GetMouseButtonDown( 0 ) ){
 			isScooping = true;
+
+			ball.SetActive( true );
 		}
 
 		if ( Input.GetMouseButtonUp( 0 ) )
 		{
+			ball.transform.localScale = Vector3.one;
+			ball.SetActive( false );
+
 			isScooping = false;
 		}
 
@@ -40,5 +52,27 @@ public class Spoon : MonoBehaviour
 		{
 			Cursor.visible = true;
 		}
+
+		if ( isScooping )
+		{
+			float positionDelta = Vector3.Distance( transform.position, lastPosition );
+			ball.transform.localScale = ball.transform.localScale * ( 1 + (growthRate * positionDelta * Time.deltaTime));
+		}
+
+		RotateTowards( lastPosition );
+
+		lastPosition = transform.position;
     }
+
+	public void RotateTowards( Vector3 position )
+	{
+		Vector3 facing = position - transform.position;
+		if ( facing.magnitude < rotationMargin )
+		{
+			return;
+		}
+
+		transform.rotation = Quaternion.Slerp( transform.rotation, Quaternion.LookRotation( facing ), turnSpeed * Time.deltaTime );
+		transform.eulerAngles = new Vector3( 0, transform.eulerAngles.y, 0 );
+	}
 }
