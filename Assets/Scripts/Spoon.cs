@@ -8,6 +8,7 @@ public class Spoon : MonoBehaviour
 	public LayerMask hitLayers;
 	public float hoverHeight = 1.8f;
 	public float growthRate = 1.1f;
+	public float maxScale = 8f;
 
 	private bool isScooping = false;
 	private Vector3 lastPosition;
@@ -56,7 +57,12 @@ public class Spoon : MonoBehaviour
 		if ( isScooping )
 		{
 			float positionDelta = Vector3.Distance( transform.position, lastPosition );
-			ball.transform.localScale = ball.transform.localScale * ( 1 + (growthRate * positionDelta * Time.deltaTime));
+			Vector3 newScale = ball.transform.localScale * (1 + (growthRate * positionDelta * Time.deltaTime));
+			// max scale
+			if (newScale.x < maxScale )
+			{
+				ball.transform.localScale = newScale;
+			}
 		}
 
 		RotateTowards( lastPosition );

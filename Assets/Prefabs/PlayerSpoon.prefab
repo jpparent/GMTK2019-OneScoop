@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 1363978796}
   m_Layer: 0
   m_Name: PlayerSpoon
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -130,7 +130,8 @@ MonoBehaviour:
     m_Bits: 256
   hoverHeight: 1.8
   growthRate: 3.01
-  TurnSpeed: 1.5
+  turnSpeed: 1.5
+  rotationMargin: 1
 --- !u!1 &7152312534920735107
 GameObject:
   m_ObjectHideFlags: 0
