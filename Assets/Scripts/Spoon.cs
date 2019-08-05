@@ -18,6 +18,9 @@ public class Spoon : MonoBehaviour
 	[SerializeField]
 	private float rotationMargin = 1f;
 
+	private enum States {empty, scooping, full };
+	private States state = States.empty;
+
 	// Start is called before the first frame update
 	void Start()
     {
@@ -28,17 +31,29 @@ public class Spoon : MonoBehaviour
     void Update()
     {
 		if ( Input.GetMouseButtonDown( 0 ) ){
-			isScooping = true;
+			if (state == States.empty )
+			{
+				isScooping = true;
+				state = States.scooping;
+				ball.SetActive( true );
+				// TODO : create new ball instead to have multiple
+			}
 
-			ball.SetActive( true );
+			if (state == States.full )
+			{
+				ball.transform.SetParent(null);
+				// TODO: drop ice cream scoop
+			}
+
 		}
 
 		if ( Input.GetMouseButtonUp( 0 ) )
 		{
-			ball.transform.localScale = Vector3.one;
-			ball.SetActive( false );
-
-			isScooping = false;
+			if (state == States.scooping )
+			{
+				isScooping = false;
+				state = States.full;
+			}
 		}
 
 		// update position to where mouse is
@@ -47,14 +62,14 @@ public class Spoon : MonoBehaviour
 		if ( Physics.Raycast( ray, out hitInfo, Mathf.Infinity, hitLayers ) )
 		{
 			Cursor.visible = false;
-			transform.position = new Vector3(hitInfo.point.x, isScooping ? hitInfo.point.y : hoverHeight, hitInfo.point.z);
+			transform.position = new Vector3(hitInfo.point.x, isScooping ? hitInfo.point.y : hitInfo.point.y + hoverHeight, hitInfo.point.z);
 		}
 		else
 		{
 			Cursor.visible = true;
 		}
 
-		if ( isScooping )
+		if ( state == States.scooping )
 		{
 			float positionDelta = Vector3.Distance( transform.position, lastPosition );
 			Vector3 newScale = ball.transform.localScale * (1 + (growthRate * positionDelta * Time.deltaTime));
